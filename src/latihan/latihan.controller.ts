@@ -9,23 +9,21 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { LatihanService } from './latihan.service';
 
 @Controller('latihan')
 export class LatihanController {
+  constructor(private latihanService: LatihanService) {}
   @Get()
   findAll(@Query() query: any) {
-    return {
-      query,
-    };
-    return 'Latihan menggunakan method GET';
+    return this.latihanService.tes();
+    // return 'Latihan menggunakan method GET';
   }
 
   @Post()
   create(@Body() payload: any) {
     console.log('payload', payload);
-    return {
-      payload: payload,
-    };
+    return this.latihanService.hello();
   }
 
   @Post('create')
