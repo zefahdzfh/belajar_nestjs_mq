@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ResponseSuccess } from 'src/interface/response.interface';
+import { BookDto, CreateBookDto, UpdateBookDto } from './book.dto';
 
 @Injectable()
 export class BookService {
@@ -25,7 +27,7 @@ export class BookService {
     return this.books;
   }
 
-  createBook(payload: any): { status: string; message: string } {
+  createBook(payload: CreateBookDto): ResponseSuccess {
     console.log('pay', payload);
 
     // const title = payload.title;
@@ -59,7 +61,28 @@ export class BookService {
     return book;
   }
 
-  findBookById(id: number) {
+  updateBook(id: number, payload: UpdateBookDto): ResponseSuccess {
+    const { title, author, year } = payload;
+    const bookIndex = this.findBookById(id);
+    this.books[bookIndex].title = title;
+    this.books[bookIndex].author = author;
+    this.books[bookIndex].year = year;
+    return {
+      status: 'ok',
+      message: 'Berhasil memperbaharui buku',
+    };
+  }
+
+  deleteBook(id: number): ResponseSuccess {
+    const bookIndex = this.findBookById(id);
+    this.books.splice(bookIndex, 1);
+    return {
+      status: 'ok',
+      message: 'Berhasil menghapus buku',
+    };
+  }
+
+  private findBookById(id: number) {
     const bookIndex = this.books.findIndex((book) => book.id === id);
 
     if (bookIndex === -1) {
