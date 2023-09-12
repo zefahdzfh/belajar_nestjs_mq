@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ResponseSuccess } from 'src/interface/response.interface';
+import { UserDto, CreateUserDto, UpdateUserDto } from './user.dto';
 
 @Injectable()
 export class UserService {
@@ -31,7 +33,7 @@ export class UserService {
     return this.users;
   }
 
-  createUser(payload: any): { status: string; message: string } {
+  createUser(payload: any): ResponseSuccess {
     const { id, nama, email, umur, tanggal_lahir, status } = payload;
     this.users.push({
       id,
@@ -62,7 +64,7 @@ export class UserService {
     return user;
   }
 
-  updateUser(id: number, payload: any): { status: string; message: string } {
+  updateUser(id: number, payload: any): ResponseSuccess {
     const { nama, email, umur, tanggal_lahir, status } = payload;
     const userIndex = this.findUserById(id);
     this.users[userIndex].nama = nama;

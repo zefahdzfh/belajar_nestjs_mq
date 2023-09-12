@@ -20,6 +20,11 @@ export class BookController {
     return this.bookService.getAllBook();
   }
 
+  @Get('lists')
+  getAllBooks() {
+    return this.bookService.getAllBooks();
+  }
+
   @Post('create')
   createBook(@Body() payload: CreateBookDto) {
     return this.bookService.createBook(payload);

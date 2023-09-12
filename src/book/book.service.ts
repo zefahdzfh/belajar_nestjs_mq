@@ -1,9 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { ResponseSuccess } from 'src/interface/response.interface';
 import { BookDto, CreateBookDto, UpdateBookDto } from './book.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Book } from './book.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BookService {
+  constructor(
+    @InjectRepository(Book) private readonly bookRepository: Repository<Book>,
+  ) {}
+
   private books: {
     id?: number;
     title: string;
@@ -18,6 +30,15 @@ export class BookService {
     },
   ];
 
+  async getAllBooks(): Promise<ResponseSuccess> {
+    const book = await this.bookRepository.find();
+    return {
+      status: 'Success',
+      message: 'List Buku ditermukan',
+      data: book,
+    };
+  }
+
   getAllBook(): {
     id?: number;
     title: string;
@@ -27,25 +48,35 @@ export class BookService {
     return this.books;
   }
 
-  createBook(payload: CreateBookDto): ResponseSuccess {
-    console.log('pay', payload);
+  async createBook(payload: CreateBookDto): Promise<ResponseSuccess> {
+    try {
+      console.log('pay', payload);
+      const { title, author, year } = payload;
 
-    // const title = payload.title;
-    // const author = payload.author;
-    // const year = payload.year;
+      const bookSave = await this.bookRepository.save({
+        title: title,
+        author: author,
+        year: year,
+      });
 
-    const { title, author, year } = payload;
-    this.books.push({
-      id: new Date().getTime(),
-      title,
-      author,
-      year,
-    });
+      // const title = payload.title;
+      // const author = payload.author;
+      // const year = payload.year;
 
-    return {
-      status: 'ok',
-      message: 'berhasil',
-    };
+      // this.books.push({
+      //   id: new Date().getTime(),
+      //    title,
+      //   author,
+      //  year,
+      // });
+
+      return {
+        status: 'ok',
+        message: 'berhasil',
+      };
+    } catch {
+      throw new HttpException('Ada Kesalahan', HttpStatus.BAD_REQUEST);
+    }
   }
 
   getDetail(id: number): {
