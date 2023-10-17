@@ -1,14 +1,23 @@
 import { OmitType } from '@nestjs/mapped-types';
 import { PickType } from '@nestjs/mapped-types';
-import { IsNumber, IsInt, IsNotEmpty, Min, Max, Length } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  Length,
+  ValidateNested,
+  Min,
+  Max,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { PageRequestDto } from 'src/utils/dto/page.dto';
 
 export class UserDto {
-  @IsNumber()
-  @Max(10)
   id: number;
 
   @IsNotEmpty()
-  @Length(3, 10)
   nama: string;
 
   @IsNotEmpty()
@@ -16,11 +25,13 @@ export class UserDto {
 
   @IsInt()
   @Min(12)
-  @Max(18)
   umur: number;
 
   @IsNotEmpty()
   tanggal_lahir: string;
+
+  @IsNotEmpty()
+  status: string;
 }
 
 export class CreateUserDto extends OmitType(UserDto, ['id']) {}
@@ -31,4 +42,12 @@ export class UpdateUserDto extends PickType(UserDto, [
   'email',
   'umur',
   'tanggal_lahir',
+  'status',
 ]) {}
+
+export class createUserArrayDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateUserDto)
+  data: CreateUserDto[];
+}

@@ -6,10 +6,14 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './user.dto';
 import { UpdateUserDto } from './user.dto';
+import { Pagination } from 'src/utils/decorator/pagination.decorator';
 
 @Controller('user')
 export class UserController {

@@ -1,9 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { ResponseSuccess } from 'src/interface/response.interface';
 import { UserDto, CreateUserDto, UpdateUserDto } from './user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {}
   private users: {
     id: number;
     nama: string;
@@ -22,32 +33,32 @@ export class UserService {
     },
   ];
 
-  getAllUser(): {
-    id: number;
-    nama: string;
-    email: string;
-    umur: number;
-    tanggal_lahir: string;
-    status: string;
-  }[] {
-    return this.users;
+  getAllUser(): ResponseSuccess {
+    return {
+      status: 'Success',
+      message: 'List User ditermukan',
+      data: this.users,
+    };
   }
 
-  createUser(payload: any): ResponseSuccess {
-    const { id, nama, email, umur, tanggal_lahir, status } = payload;
-    this.users.push({
-      id,
-      nama,
-      email,
-      umur,
-      tanggal_lahir,
-      status,
-    });
+  async createUser(createUserDto: CreateUserDto): Promise<ResponseSuccess> {
+    const { nama, email, umur, tanggal_lahir, status } = createUserDto;
 
-    return {
-      status: 'Sukses',
-      message: 'Berhasil membuat user baru',
-    };
+    try {
+      await this.userRepository.save({
+        nama: nama,
+        email: email,
+        umur: umur,
+        tanggal_lahir: tanggal_lahir,
+        status: status,
+      });
+      return {
+        status: 'Success',
+        message: 'Berhasil menambakan User',
+      };
+    } catch (err) {
+      throw new HttpException('Ada Kesalahan', HttpStatus.BAD_REQUEST);
+    }
   }
 
   getDetail(id: number): {
