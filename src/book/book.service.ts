@@ -113,7 +113,7 @@ export class BookService extends BaseResponse {
       //  year,
       // });
 
-      return this._succes('berhasil cuy', bookSave);
+      return this._success('berhasil cuy', bookSave);
     } catch {
       throw new HttpException('Ada Kesalahan', HttpStatus.BAD_REQUEST);
     }

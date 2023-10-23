@@ -1,7 +1,7 @@
 import { ResponseSuccess, ResponsePagination } from 'src/interface';
 
 class BaseResponse {
-  _succes(message: string, data?: any): ResponseSuccess {
+  _success(message: string, data?: any): ResponseSuccess {
     return {
       status: 'succes',
       message: message,
