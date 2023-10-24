@@ -1,14 +1,13 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import BaseResponse from 'src/utils/response/base.respone';
-import { UserDto, RegisterDto, LoginDto } from './auth.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ResponseSuccess } from 'src/interface';
-import { Hash } from 'crypto';
+import BaseResponse from 'src/utils/response/base.respone';
 import { User } from './auth.entity';
+import { LoginDto, RegisterDto } from './auth.dto';
+import { compare, hash } from 'bcrypt';
+import { ResponseSuccess } from 'src/interface';
 import { JwtService } from '@nestjs/jwt';
-import { hash, compare } from 'bcrypt';
 import { jwt_config } from 'src/config/jwt.config';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService extends BaseResponse {
@@ -18,6 +17,7 @@ export class AuthService extends BaseResponse {
   ) {
     super();
   }
+
   async register(payload: RegisterDto): Promise<ResponseSuccess> {
     const checkUserExists = await this.authRepository.findOne({
       where: {
@@ -28,17 +28,22 @@ export class AuthService extends BaseResponse {
       throw new HttpException('User already registered', HttpStatus.FOUND);
     }
 
-    payload.password = await hash(payload.password, 12); //hash password
-    await this.authRepository.save(payload);
+    payload.password = await hash(payload.password, 12);
+    const reg = await this.authRepository.save(payload);
 
-    return this._success('Register Berhasil');
+    return this._success('Register Berhasil', reg);
   }
-  generateJWT(payload: jwtPayload, expiresIn: string | number, token: string) {
+
+  private generateJWT(
+    payload: jwtPayload,
+    expiresIn: string | number,
+    secret_key: string,
+  ) {
     return this.jwtService.sign(payload, {
-      secret: token,
+      secret: secret_key,
       expiresIn: expiresIn,
     });
-  } //membuat method untuk generate jwt
+  }
 
   async login(payload: LoginDto): Promise<ResponseSuccess> {
     const checkUserExists = await this.authRepository.findOne({
@@ -86,7 +91,7 @@ export class AuthService extends BaseResponse {
       await this.authRepository.save({
         refresh_token: refresh_token,
         id: checkUserExists.id,
-      }); // simpan refresh token ke dalam tabel
+      });
       return this._success('Login Success', {
         ...checkUserExists,
         access_token: access_token,
@@ -98,5 +103,15 @@ export class AuthService extends BaseResponse {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
+  }
+
+  async myProfile(id: number): Promise<ResponseSuccess> {
+    const user = await this.authRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    return this._success('OK', user);
   }
 }
