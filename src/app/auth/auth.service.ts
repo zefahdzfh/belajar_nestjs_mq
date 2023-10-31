@@ -1,4 +1,9 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  UnauthorizedException,
+} from '@nestjs/common';
 import BaseResponse from 'src/utils/response/base.respone';
 import { UserDto, RegisterDto, LoginDto } from './auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -54,6 +59,8 @@ export class AuthService extends BaseResponse {
       },
     });
 
+    console.log(checkUserExists);
+
     if (!checkUserExists) {
       throw new HttpException(
         'User tidak ditemukan',
@@ -75,7 +82,7 @@ export class AuthService extends BaseResponse {
 
       const access_token = await this.generateJWT(
         jwtPayload,
-        '1d',
+        '10s',
         jwt_config.access_token_secret,
       );
       const refresh_token = await this.generateJWT(
@@ -98,5 +105,64 @@ export class AuthService extends BaseResponse {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
+  }
+  async myProfile(id: number): Promise<ResponseSuccess> {
+    const user = await this.authRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    return this._success('OK', user);
+  }
+
+  async refreshToken(id: number, token: string): Promise<ResponseSuccess> {
+    const checkUserExists = await this.authRepository.findOne({
+      where: {
+        id: id,
+        refresh_token: token,
+      },
+      select: {
+        id: true,
+        nama: true,
+        email: true,
+        password: true,
+        refresh_token: true,
+      },
+    });
+
+    console.log('user', checkUserExists);
+    if (checkUserExists === null) {
+      throw new UnauthorizedException();
+    }
+
+    const jwtPayload: jwtPayload = {
+      id: checkUserExists.id,
+      nama: checkUserExists.nama,
+      email: checkUserExists.email,
+    };
+
+    const access_token = await this.generateJWT(
+      jwtPayload,
+      '1m',
+      jwt_config.access_token_secret,
+    );
+
+    const refresh_token = await this.generateJWT(
+      jwtPayload,
+      '5m',
+      jwt_config.refresh_token_secret,
+    );
+
+    await this.authRepository.save({
+      refresh_token: refresh_token,
+      id: checkUserExists.id,
+    });
+
+    return this._success('Success', {
+      ...checkUserExists,
+      access_token: access_token,
+      refresh_token: refresh_token,
+    });
   }
 }

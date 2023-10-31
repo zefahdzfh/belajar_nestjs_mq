@@ -6,10 +6,12 @@ import { User } from './auth.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { jwt_config } from 'src/config/jwt.config';
+import { JwtAccessTokenStrategy } from './jwtAccessToken.strategy';
+import { JwtRefreshTokenStrategy } from './jwtRefreshToken.strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), JwtModule.register({})],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtAccessTokenStrategy, JwtRefreshTokenStrategy],
 })
 export class AuthModule {}
