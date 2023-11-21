@@ -8,9 +8,20 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwt_config } from 'src/config/jwt.config';
 import { JwtAccessTokenStrategy } from './jwtAccessToken.strategy';
 import { JwtRefreshTokenStrategy } from './jwtRefreshToken.strategy';
+import { MailModule } from '../mail/mail.module';
+import { ResetPassword } from '../mail/reset_password.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), JwtModule.register({})],
+  imports: [
+    TypeOrmModule.forFeature([User, ResetPassword]),
+    JwtModule.register({
+      global: true,
+      signOptions: {
+        algorithm: 'HS384',
+      },
+    }),
+    MailModule,
+  ],
   controllers: [AuthController],
   providers: [AuthService, JwtAccessTokenStrategy, JwtRefreshTokenStrategy],
 })
