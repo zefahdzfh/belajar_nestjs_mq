@@ -19,7 +19,7 @@ import { join } from 'path';
         from: '"No Reply" <noreply@example.com>',
       },
       template: {
-        dir: join(__dirname, 'templates'), // template akan di ambil dari handlebar yang ada pada folder templates
+        dir: join(__dirname, './templates'), // template akan di ambil dari handlebar yang ada pada folder templates
         adapter: new HandlebarsAdapter(),
         options: {
           strict: false,
