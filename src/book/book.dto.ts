@@ -49,6 +49,11 @@ export class createBookArrayDto {
   data: CreateBookDto[];
 }
 
+export class DeleteArrayDto {
+  @IsArray()
+  delete: number[];
+}
+
 export class FindBookDto extends PageRequestDto {
   @IsOptional()
   title: string;
