@@ -9,6 +9,7 @@ import { typeOrmConfig } from './config/typeorm.config';
 import { Pts2023Service } from './pts-2023/pts-2023.service';
 import { Pts2023Controller } from './pts-2023/pts-2023.controller';
 import { Pts2023Module } from './pts-2023/pts-2023.module';
+import { Pas2023Module } from './pas-2023/pas-2023.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { Pts2023Module } from './pts-2023/pts-2023.module';
     BookModule,
     Pts2023Module,
     UserModule,
+    Pas2023Module,
   ],
   controllers: [AppController, Pts2023Controller],
   providers: [AppService, Pts2023Service],
