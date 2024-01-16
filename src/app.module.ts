@@ -10,6 +10,7 @@ import { Pts2023Controller } from './pts-2023/pts-2023.controller';
 import { Pts2023Module } from './pts-2023/pts-2023.module';
 import { AuthModule } from './app/auth/auth.module';
 import { MailModule } from './app/mail/mail.module';
+import { KategoriModule } from './app/kategori/kategori.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MailModule } from './app/mail/mail.module';
     Pts2023Module,
     AuthModule,
     MailModule,
+    KategoriModule,
   ],
   controllers: [AppController, Pts2023Controller],
   providers: [AppService, Pts2023Service],
