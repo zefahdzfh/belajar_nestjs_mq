@@ -88,7 +88,7 @@ export class AuthService extends BaseResponse {
 
       const access_token = await this.generateJWT(
         jwtPayload,
-        '10s',
+        '1d',
         jwt_config.access_token_secret,
       );
       const refresh_token = await this.generateJWT(
