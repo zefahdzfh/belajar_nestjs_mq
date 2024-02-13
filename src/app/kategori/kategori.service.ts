@@ -97,6 +97,25 @@ export class KategoriService extends BaseResponse {
 
     return this._pagination('OK', result, total, page, pageSize);
   }
+
+  async getDetail(id: number): Promise<ResponseSuccess> {
+    const kategori = await this.kategoriRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (kategori === null) {
+      throw new NotFoundException(`Kategori Dengan id ${id} tidak ditemukan`);
+    }
+
+    return {
+      status: 'ok',
+      message: 'berhasil',
+      data: kategori,
+    };
+  }
+
   async getUserCategory(): Promise<ResponseSuccess> {
     const user = await this.userRepository.findOne({
       where: {

@@ -55,4 +55,9 @@ export class KategoriController {
   deletekategori(@Param('id') id: string) {
     return this.kategoriService.deletekategori(+id);
   }
+
+  @Get('detail/:id')
+  getDetail(@Param('id') id: string) {
+    return this.kategoriService.getDetail(Number(id));
+  }
 }
